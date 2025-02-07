@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 
 import Home from "./pages/Home";
 import Course from "./pages/Course";
@@ -12,19 +11,6 @@ import Teacher from "./pages/Teacher";
 import Navbar from "./components/Navbar";
 
 function App() {
-
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // 讀取 URL 中的 `redirect` 參數
-    const params = new URLSearchParams(window.location.search);
-    const redirectPath = params.get("redirect");
-    
-    if (redirectPath) {
-        // 清除 `?redirect=` 並導向正確的頁面
-        navigate("/" + redirectPath, { replace: true });
-    }
-}, [navigate]);
 
   return (
     <div className="App">
