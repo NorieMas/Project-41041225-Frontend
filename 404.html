@@ -8,8 +8,12 @@
         var path = window.location.pathname.substring(1);
         var basePath = "/Project-41041225-React/";
         
+        // 檢查當前路徑是否已經包含 basePath
         if (!path.startsWith("Project-41041225-React/")) {
             window.location.replace(window.location.origin + basePath + "?redirect=" + path);
+        } else {
+            // 如果已經包含 basePath，則直接重定向到首頁
+            window.location.replace(window.location.origin + basePath);
         }
     </script>
 </head>
