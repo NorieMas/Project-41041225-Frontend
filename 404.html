@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
     <script>
-        // 取得當前路徑（去掉開頭的 `/`）
         var path = window.location.pathname.substring(1);
         
-        // 重新導向到 index.html，並使用 ?redirect= 來保存原始路徑
         window.location.replace(window.location.origin + "/Project-41041225-React/?redirect=" + path);
     </script>
 </head>

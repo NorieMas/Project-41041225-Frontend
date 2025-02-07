@@ -5,6 +5,15 @@
     <link rel="icon" type="image/svg+xml" href="/Project-41041225-React/assets/blockly-D2G5OndJ.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>積木式 Python 編程學習系統</title>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const redirectPath = params.get("redirect");
+      
+      if (redirectPath) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        window.location.replace("/Project-41041225-React/" + redirectPath);
+      }
+    </script>
     <script type="module" crossorigin src="/Project-41041225-React/assets/index-xX5Kdbuy.js"></script>
     <link rel="stylesheet" crossorigin href="/Project-41041225-React/assets/index-EnN7mywb.css">
   </head>
