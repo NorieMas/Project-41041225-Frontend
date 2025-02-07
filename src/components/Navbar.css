@@ -1,0 +1,23 @@
+/*border: 1px solid red; 用於檢查佈局 */
+
+.container-fluid {
+  max-width: 1536px; /* max-w-screen-2xl */
+  margin: 0 auto; /* mx-auto */
+}
+
+.navbar-brand {
+  display: flex; /* flex */
+  align-items: center; /* 水平置中 */
+}
+
+.navbar-title { /* 設定 "網頁標題" 文字大小 */
+  font-size: 25px;
+}
+
+.navbar-collapse{
+  justify-content: space-between; /* justify-between */
+}
+
+.nav-link { /* 調整 "網頁功能" 文字大小 */
+  font-size: 20px;
+}

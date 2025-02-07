@@ -1,0 +1,33 @@
+/* 顯示 workspace 區域*/
+.blockly-workspace {
+  height: 100%;
+  width: 100%;
+}
+
+/* 黑暗模式*/
+.blocklySvg {
+  background-color: #333 !important;
+}
+
+.blocklyToolboxDiv {
+  background-color: #444 !important;
+}
+
+.blocklyTreeLabel {
+  color: #fff !important;
+}
+
+.blocklyFlyoutBackground {
+  fill: #555 !important;
+}
+
+.blocklyFlyoutLabelText { 
+  fill: #fff !important;
+}
+
+/* 明亮模式*/
+
+/* 除錯：類別滾輪顯示問題*/
+svg[display="none"] { 
+  display: none;
+}
