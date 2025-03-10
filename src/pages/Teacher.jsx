@@ -17,7 +17,7 @@ import 'ace-builds/src-noconflict/theme-monokai';
 
 Blockly.setLocale(zhHant);
 
-function Student() {
+function Teacher() {
   const [xml, setXml] = useState("");
   const [code, setCode] = useState("");
 
@@ -62,4 +62,4 @@ function Student() {
   );
 }
 
-export default Student;
+export default Teacher;
