@@ -25,6 +25,9 @@ function Teacher() {
     const newCode = pythonGenerator.workspaceToCode(workspace);
     setCode(newCode);
   };
+
+  const handleCodeChange = (workspace) => {
+  };
   
   return (
     <div className="container mt-4">
@@ -49,7 +52,7 @@ function Teacher() {
                 mode="python"
                 theme="monokai"
                 name="ace-editor"
-                onChange={(newCode) => setCode(newCode)}
+                onChange={handleCodeChange}
                 value={code}
                 editorProps={{ $blockScrolling: true }}
                 style={{ width: '100%', height: '100%' }}
