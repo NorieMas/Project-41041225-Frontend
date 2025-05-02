@@ -1,83 +1,95 @@
-import React, { useState } from 'react';
-import { BlocklyWorkspace } from 'react-blockly';
-import AceEditor from 'react-ace';
-import toolboxConfig from '../config/Toolbox';
+// src/pages/Student.jsx
+import React, { useState, useRef } from 'react';
 
-import * as Blockly from 'blockly/core';
-import * as libraryBlocks from 'blockly/blocks';
+/* ── 1. Blockly 本體 + blocks + Python 產生器 ────────────────────── */
+import * as Blockly from 'blockly';
+import 'blockly/blocks';
+import 'blockly/python';
 import * as zhHant from 'blockly/msg/zh-hant';
 
-import { pythonGenerator } from 'blockly/python';
-// 此處我們不在用工作區變更同步更新 code，以免覆蓋使用者輸入（可根據需要修改）
-import { PythonToBlocks } from '../utils/test';
+/* 先把 Blockly 掛到 window，讓其它 util 檔在 import 時就抓得到 */
+window.Blockly = Blockly;
 
+/* ── 2. 取出 pythonGenerator ───────────────────────────────────── */
+import { pythonGenerator } from 'blockly/python';
+
+/* ── 3. 自訂積木 (raw_block) ──────────────────────────────────── */
+import defineRawBlock from '../blockly_blocks/custom_block/raw_block';
+defineRawBlock(Blockly, pythonGenerator);
+Blockly.Python = pythonGenerator;
+
+
+/* ── 4. 其它工具 ──────────────────────────────────────────────── */
+import { PythonToBlocks } from '../utils/test';
+import toolboxConfig from '../config/Toolbox';
+import Xml from '../blockly_blocks/xml';
+
+/* ── 5. React-Blockly + AceEditor ─────────────────────────────── */
+import { BlocklyWorkspace } from 'react-blockly';
+import AceEditor from 'react-ace';
 import '../config/blockly.css';
-import 'blockly/blocks';
 import 'ace-builds/src-noconflict/mode-python';
 import 'ace-builds/src-noconflict/theme-monokai';
+import 'ace-builds/src-noconflict/ext-language_tools';
 
+/* ── 6. 語系設定 ──────────────────────────────────────────────── */
 Blockly.setLocale(zhHant);
 
+/* ================================================================= */
 function Student() {
-  // editorCode 保存 AceEditor 的輸入文字，xmlState 儲存轉換後的 XML 結果
-  const [editorCode, setEditorCode] = useState("");
-  const [xml, setXml] = useState("");
-  const [workspace, setWorkspace] = useState(null);
+  const [editorCode, setEditorCode] = useState('');
+  const [xml, setXml]         = useState('');
+  const workspaceRef          = useRef(null);
+  const [converter]           = useState(() => new PythonToBlocks());
 
-  // 僅建立一次轉換器實例
-  const [converter] = useState(() => new PythonToBlocks());
-
-  // AceEditor 的 onChange 只更新輸入狀態，不進行轉換
-  const handleCodeChange = (newCode) => {
-    setEditorCode(newCode);
-  };
-
-  // 點選按鈕時才觸發轉換，避免每次輸入就更新轉換結果覆蓋使用者輸入
+  /* ---------- 左側文字 → 右側積木 -------------------------------- */
   const handleConvert = () => {
+    const result = converter.convertSource(editorCode);
+  
+    // 無論有無錯誤，都照常嘗試塞進 Workspace
     try {
-      const result = converter.convertSource(editorCode);
-      if (!result.error) {
+      const dom = Xml.textToDom(result.xml);
+      console.log('raw XML:', result.xml);
+      if (workspaceRef.current) {
+        workspaceRef.current.clear();
+        Xml.domToWorkspace(dom, workspaceRef.current);
         setXml(result.xml);
-      } else {
-        console.error("轉換錯誤：", result.error);
       }
-    } catch (e) {
-      console.error("轉換過程中拋出錯誤：", e);
+    } catch (err) {
+      console.error('XML 匯入 Workspace 失敗：', err);
     }
   };
 
-  // Blockly 工作區變更時（例如由積木生成 Python 程式碼）不同步更新 AceEditor，避免覆蓋使用者輸入
+  /* ---------- 右側積木 → 左側程式碼 -------------------------------- */
   const handleWorkspaceChange = (ws) => {
-    // 可根據需要將產生的程式碼顯示在另一處；此處僅記錄日誌
-    const newCode = pythonGenerator.workspaceToCode(ws);
-    console.log("由積木生成的程式碼：", newCode);
+    if (!ws) return;
+    workspaceRef.current = ws;
+    const newCode = Blockly.Python.workspaceToCode(ws);
+    // setEditorCode(newCode);       // 即時同步到左側文字
   };
 
+  /* ================================================================= */
   return (
     <div className="container mt-4">
       <div className="card bg-dark text-white">
         <div className="card-header">Blockly Workspace</div>
-        <div className="card-body" style={{ height: '500px', width: '100%' }}>
-          <div className="row" style={{ height: '100%' }}>
-            <div className="col-md-6" style={{ height: '100%' }}>
+        <div className="card-body" style={{ height: 500 }}>
+          <div className="row h-100">
+            <div className="col-md-6 h-100">
               <BlocklyWorkspace
                 toolboxConfiguration={toolboxConfig}
-                initialXml={xml} 
-                onXmlChange={(newXml) => setXml(newXml)}
-                onWorkspaceChange={handleWorkspaceChange}
+                initialXml={xml}
                 className="blockly-workspace"
-                style={{ height: '100%' }}
-                // 警告：ref 傳入給函式元件會有警告，此處若不需要直接操作工作區，也可忽略
-                ref={(ws) => setWorkspace(ws)}
+                onWorkspaceChange={handleWorkspaceChange}
               />
             </div>
-            <div className="col-md-6" style={{ height: '100%' }}>
+            <div className="col-md-6 h-100">
               <AceEditor
                 mode="python"
                 theme="monokai"
                 name="ace-editor"
-                onChange={handleCodeChange}
                 value={editorCode}
+                onChange={setEditorCode}
                 editorProps={{ $blockScrolling: true }}
                 style={{ width: '100%', height: '100%' }}
               />
@@ -85,7 +97,10 @@ function Student() {
           </div>
         </div>
       </div>
-      <button onClick={handleConvert}>轉換程式碼為積木塊</button>
+
+      <button className="btn btn-primary mt-2" onClick={handleConvert}>
+        轉換程式碼為積木塊
+      </button>
     </div>
   );
 }
