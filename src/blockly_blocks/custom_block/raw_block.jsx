@@ -22,7 +22,9 @@ export default function defineRawBlock(Blockly, pythonGenerator) {
   };
 
   /* --------- 2. 定義 Python 產生器 -------------------- */
-  pythonGenerator['raw_block'] = (block) => {
+  // Blockly 9+：一定要掛到 forBlock
+  pythonGenerator.forBlock = pythonGenerator.forBlock || {};
+  pythonGenerator.forBlock['raw_block'] = (block, gen) => {
     const code = block.getFieldValue('TEXT') || '';
     return code + '\n';
   };

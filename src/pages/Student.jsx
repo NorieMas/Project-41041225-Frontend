@@ -16,8 +16,17 @@ import { pythonGenerator } from 'blockly/python';
 /* ── 3. 自訂積木 (raw_block) ──────────────────────────────────── */
 import defineRawBlock from '../blockly_blocks/custom_block/raw_block';
 defineRawBlock(Blockly, pythonGenerator);
-Blockly.Python = pythonGenerator;
 
+// 讓 Blockly 內部（包含 react-blockly）都找得到這份 generator
+/* 3-B. 把 generator 登錄進 registry；若已存在就忽略錯誤 */
+try {
+  Blockly.registry.register('generator', 'python', pythonGenerator);
+} catch (e) {
+  // 如果是「已經註冊」那就安靜略過；其餘錯誤才拋出
+  if (!/already registered/i.test(e.message)) {
+    throw e;
+  }
+}
 
 /* ── 4. 其它工具 ──────────────────────────────────────────────── */
 import { PythonToBlocks } from '../utils/test';
@@ -64,7 +73,7 @@ function Student() {
   const handleWorkspaceChange = (ws) => {
     if (!ws) return;
     workspaceRef.current = ws;
-    const newCode = Blockly.Python.workspaceToCode(ws);
+    const newCode = pythonGenerator.workspaceToCode(ws);
     // setEditorCode(newCode);       // 即時同步到左側文字
   };
 
