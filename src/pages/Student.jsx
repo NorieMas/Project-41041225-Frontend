@@ -15,6 +15,9 @@ import { pythonGenerator } from 'blockly/python';
 
 /* ── 3. 自訂積木 (raw_block) ──────────────────────────────────── */
 import defineRawBlock from '../blockly_blocks/custom_block/raw_block';
+/* 註冊 @blockly/field-multilineinput 插件，以支援多行輸入欄位 */
+import { registerFieldMultilineInput } from '@blockly/field-multilineinput';
+registerFieldMultilineInput();
 defineRawBlock(Blockly, pythonGenerator);
 
 // 讓 Blockly 內部（包含 react-blockly）都找得到這份 generator
@@ -54,7 +57,7 @@ function Student() {
   /* ---------- 左側文字 → 右側積木 -------------------------------- */
   const handleConvert = () => {
     const result = converter.convertSource(editorCode);
-  
+    
     // 無論有無錯誤，都照常嘗試塞進 Workspace
     try {
       const dom = Xml.textToDom(result.xml);

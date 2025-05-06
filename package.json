@@ -14,6 +14,7 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@blockly/field-multilineinput": "^5.0.13",
     "bootstrap": "^5.3.3",
     "js-beautify": "^1.15.4",
     "react": "^18.3.1",
