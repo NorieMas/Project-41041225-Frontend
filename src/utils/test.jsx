@@ -1,13 +1,16 @@
-import Sk from 'skulpt';
-Sk.configure({ python3: false, });
+Sk.configure({
+    __future__: Sk.python3
+});
+
+window.Sk = Sk;
+//console.log(Sk);
 
 /**
- * An object for converting Python source code to the
- * Blockly XML representation.
- * 
+ * An object for converting Python source code to the Blockly XML representation.
  * @constructor
  * @this {PythonToBlocks}
  */
+
 // 定義一個建構子函式，用於建立 PythonToBlocks 物件，目的是將 Python 程式碼轉換成 Blockly 的 XML 表示
 function PythonToBlocks() {
     // 此處目前沒有初始化內部屬性，將在其他方法中動態設定
@@ -27,19 +30,16 @@ PythonToBlocks.prototype.convertSourceToCodeBlock = function(python_source) {
 }
 
 /**
- * The main function for converting a string representation of Python
- * code to the Blockly XML representation.
- *
- * @param {string} python_source - The string representation of Python
- *      code (e.g., "a = 0").
- * @returns {Object} An object which will either have the converted
- *      source code or an error message and the code as a code-block.
+ * The main function for converting a string representation of Python code to the Blockly XML representation.
+ * @param {string} python_source - The string representation of Python code (e.g., "a = 0").
+ * @returns {Object} An object which will either have the converted source code or an error message and the code as a code-block.
  */
+
 // 主轉換函式：將 Python 程式碼（字串）轉換為 Blockly 的 XML 表示，回傳物件包含 XML、錯誤狀態、行對應資訊等
 PythonToBlocks.prototype.convertSource = function(python_source) {
     var xml = document.createElement("xml");            // 建立一個 <xml> 根元素
     if (python_source.trim() === "") {                    // 如果輸入的程式碼去除空白後為空
-        console.log("TEXTBOX VUOTA");                     // 輸出日誌提示文字框為空（"vuota" 為義大利語，意為空白）
+        console.log("TEXTBOX EMPTY");                     // 輸出日誌提示文字框為空
         return {"xml": xmlToString(xml), "error": null};   // 回傳空的 XML 及 null 錯誤
     }
     // 將原始程式碼按行拆分，保存到屬性 this.source，以便後續根據行號提取對應的程式碼
@@ -53,8 +53,12 @@ PythonToBlocks.prototype.convertSource = function(python_source) {
         parse = Sk.parse(filename, python_source);
         // 從 CST 轉換成 Abstract Syntax Tree（AST），這是後續轉換邏輯的依據
         ast = Sk.astFromParse(parse.cst, filename, parse.flags);
-        //console.log('parse=', parse,'ast=', ast);      // 除錯用，輸出解析結果和 AST（目前為注釋）
-        // symbol_table = Sk.symboltable(ast, filename, python_source, filename, parse.flags);  // 符號表生成（目前未啟用）
+        //ast = Sk.astFromParse(python_source, filename);
+        //console.log("=== CST ===");
+        //console.log(JSON.stringify(parse.cst, null, 2));
+        
+        //console.log("=== AST ===");
+        //console.log(JSON.stringify(ast, null, 2));
     } catch (e) {                                       // 如果解析過程中發生錯誤
         error = e;                                      // 將錯誤儲存到變數 error
         xml.appendChild(raw_block(python_source));      // 將原始程式碼以 raw_block 形式加入 XML，以便用戶檢查
@@ -870,30 +874,66 @@ PythonToBlocks.prototype.Print = function(node)
  * 並將迴圈主體放入 DO 欄位。
  */
 PythonToBlocks.prototype.For = function(node) {
-    var target = node.target;
-    var iter = node.iter;
-    var body = node.body;
-    var orelse = node.orelse;
-    
+    const target = node.target;
+    const iter = node.iter;
+    const body = node.body;
+    const orelse = node.orelse;
+
     if (orelse.length > 0) {
         throw new Error("Or-else block of For is not implemented.");
     }
 
-    // 若迭代器為 range() 呼叫，建立 coderbot_repeat 區塊
-    if(iter.func.id.v === "range"){
-        return block("coderbot_repeat", node.lineno, {"TIMES": iter.args[0].n.v}, {}, {"inline": "true"}, {}, {"DO": this.convertBody(body)});
-    } else {
-        // 否則，建立 controls_forEach 區塊，將 iter 與 target 轉換後分別放入 LIST 與 VAR 欄位
-        return block("controls_forEach", node.lineno, {}, {
-                "LIST": this.convert(iter),
-                "VAR": this.convert(target)
+    // 處理 range(...) 形式的 for 迴圈
+    if (
+        iter._astname === "Call" &&
+        iter.func?.id?.v === "range"
+    ) {
+        const args = iter.args;
+
+        if (args.length === 1) {
+            // range(n) → controls_repeat_ext
+            return block("controls_repeat_ext", node.lineno, {}, {
+                "TIMES": this.convert(args[0])
             }, {
                 "inline": "true"
             }, {}, {
                 "DO": this.convertBody(body)
             });
+        } else if (args.length === 2 || args.length === 3) {
+            // range(start, stop[, step]) → controls_for
+            const start = this.convert(args[0]);
+            const stop = this.convert(args[1]);
+            const step = args.length === 3
+                ? this.convert(args[2])
+                : block("math_number", node.lineno, { "NUM": 1 });
+
+            return block("controls_for", node.lineno, {
+                "VAR": this.Name_str(target)
+            }, {
+                "FROM": start,
+                "TO": stop,
+                "BY": step
+            }, {
+                "inline": "true"
+            }, {}, {
+                "DO": this.convertBody(body)
+            });
+        } else {
+            throw new Error("Unsupported number of arguments to range()");
+        }
     }
-}
+
+    // 其他可迭代對象 → controls_forEach
+    return block("controls_forEach", node.lineno, {}, {
+        "LIST": this.convert(iter),
+        "VAR": this.convert(target)
+    }, {
+        "inline": "true"
+    }, {}, {
+        "DO": this.convertBody(body)
+    });
+};
+
 
 /*
  * test: expr_ty
@@ -914,7 +954,7 @@ PythonToBlocks.prototype.While = function(node) {
     if (orelse.length > 0) {
         throw new Error("Or-else block of While is not implemented.");
     }
-    return block("controls_while", node.lineno, {}, {
+    return block("controls_whileUntil", node.lineno, {}, {
         "BOOL": this.convert(test)
     }, {}, {}, {
         "DO": this.convertBody(body)
@@ -1489,7 +1529,7 @@ PythonToBlocks.prototype.compareOperator = function(op) {
  */
 PythonToBlocks.prototype.Compare = function(node)
 {
-    console.log("Compare node:", JSON.stringify(node, null, 2));
+    //console.log("Compare node:", JSON.stringify(node, null, 2));
 
     var left = node.left;
     var ops = node.ops;
@@ -1878,7 +1918,7 @@ PythonToBlocks.prototype.CallAttribute = function(func, args, keywords, starargs
                 }
 
             }else if(name == "find_text") {
-                console.log("keywords[1]: " ,keywords[1])
+                //console.log("keywords[1]: " ,keywords[1])
                 if (args.length == 0 && keywords.length ==2) {
                     if(keywords[1].value._astname === "Str" && keywords[0].value.s.v === "alpha" || keywords[0].value.s.v === "num" || keywords[0].value.s.v === "alphanum" || keywords[0].value.s.v === "unspec") {
                         return [block("coderbot_adv_findText", func.lineno, {"ACCEPT": keywords[0].value.s.v}, {"COLOR": this.convert(keywords[1].value)})];
@@ -2091,7 +2131,7 @@ PythonToBlocks.prototype.Call = function(node) {
                         {"@name": "xrange",
                          "": this.convert(args[0])})
                 default:
-                    console.log("PRIMOOOO");
+                    //console.log("PRIMOOOO");
                     if (starargs !== null && starargs.length > 0) {
                         throw new Error("*args (variable arguments) are not implemented yet.");
                     } else if (kwargs !== null && kwargs.length > 0) {

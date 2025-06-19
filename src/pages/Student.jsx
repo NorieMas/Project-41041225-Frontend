@@ -20,6 +20,7 @@ import { registerFieldMultilineInput } from '@blockly/field-multilineinput';
 registerFieldMultilineInput();
 defineRawBlock(Blockly, pythonGenerator);
 
+
 // 讓 Blockly 內部（包含 react-blockly）都找得到這份 generator
 /* 3-B. 把 generator 登錄進 registry；若已存在就忽略錯誤 */
 try {
@@ -61,7 +62,6 @@ function Student() {
     // 無論有無錯誤，都照常嘗試塞進 Workspace
     try {
       const dom = Xml.textToDom(result.xml);
-      console.log('raw XML:', result.xml);
       if (workspaceRef.current) {
         workspaceRef.current.clear();
         Xml.domToWorkspace(dom, workspaceRef.current);
