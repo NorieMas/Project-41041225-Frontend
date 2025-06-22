@@ -1,4 +1,5 @@
-// src/pages/Student.jsx
+/* src/pages/Student.jsx */
+
 import React, { useState, useRef } from 'react';
 
 /* ── 1. Blockly 本體 + blocks + Python 產生器 ────────────────────── */

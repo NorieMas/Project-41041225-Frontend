@@ -1,3 +1,5 @@
+/* src/pages/Course.jsx */
+
 import React from "react";
 
 const Course = () => {

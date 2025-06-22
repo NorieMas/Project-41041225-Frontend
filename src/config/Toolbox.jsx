@@ -1,4 +1,5 @@
-// src/config/Toolbox.jsx
+/* src/config/Toolbox.jsx */
+
 const Toolbox = {
     kind: "categoryToolbox",
     contents: [

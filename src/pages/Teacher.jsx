@@ -1,3 +1,5 @@
+/* src/pages/Teacher.jsx */
+
 import React, { useState } from 'react';
 import { BlocklyWorkspace } from 'react-blockly';
 import AceEditor from 'react-ace';

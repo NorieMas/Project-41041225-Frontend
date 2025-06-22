@@ -1,3 +1,5 @@
+/* src/pages/Support.jsx */
+
 import React from "react";
 
 const Support = () => {

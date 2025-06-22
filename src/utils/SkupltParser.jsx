@@ -1,3 +1,5 @@
+/* src/utils/SkupltParser.jsx */
+
 // 從 'skulpt' 套件中導入 Sk，這個套件用於在瀏覽器中解析與執行 Python 代碼
 import Sk from 'skulpt';
 // 從 'js-beautify' 套件導入 js_beautify，用於美化（格式化） JavaScript 代碼

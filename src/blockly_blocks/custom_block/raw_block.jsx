@@ -1,4 +1,4 @@
-// src/blockly_blocks/custom_block/raw_block.jsx
+/* src/blockly_blocks/custom_block/raw_block.jsx */
 
 /**
  * 自訂「raw_block」：

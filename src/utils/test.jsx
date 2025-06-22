@@ -1,4 +1,5 @@
-// src/utils/test.jsx
+/* src/utils/test.jsx */
+
 Sk.configure({
     __future__: Sk.python3
 });
