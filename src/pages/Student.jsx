@@ -2,31 +2,24 @@
 
 import React, { useState, useRef } from 'react';
 
-/* ── 1. Blockly 本體 + blocks + Python 產生器 ────────────────────── */
+/* 載入 Blockly 主要相關套件 */
 import * as Blockly from 'blockly';
 import 'blockly/blocks';
 import 'blockly/python';
 import * as zhHant from 'blockly/msg/zh-hant';
 
-/* 先把 Blockly 掛到 window，讓其它 util 檔在 import 時就抓得到 */
-window.Blockly = Blockly;
+window.Blockly = Blockly; // 把 Blockly 掛到 window，讓其它 util 在 import 時就抓得到。
 
-/* ── 2. 取出 pythonGenerator ───────────────────────────────────── */
-import { pythonGenerator } from 'blockly/python';
-
-/* ── 3. 自訂積木 (raw_block) ──────────────────────────────────── */
-import defineRawBlock from '../blockly_blocks/custom_block/raw_block';
-/* 註冊 @blockly/field-multilineinput 插件，以支援多行輸入欄位 */
-import { registerFieldMultilineInput } from '@blockly/field-multilineinput';
+import { pythonGenerator } from 'blockly/python'; // 載入 pythonGenerator 生成器。
+import defineRawBlock from '../blockly_blocks/custom_block/raw_block'; // 自訂 raw_block 積木。
+import { registerFieldMultilineInput } from '@blockly/field-multilineinput'; // 註冊 @blockly/field-multilineinput 插件，支援多行輸入欄位。
 registerFieldMultilineInput();
 defineRawBlock(Blockly, pythonGenerator);
 
-/* ── 4. 其它工具 ──────────────────────────────────────────────── */
 import { PythonToBlocks } from '../utils/test';
 import toolboxConfig from '../config/Toolbox';
 import Xml from '../blockly_blocks/xml';
 
-/* ── 5. React-Blockly + AceEditor ─────────────────────────────── */
 import { BlocklyWorkspace } from 'react-blockly';
 import AceEditor from 'react-ace';
 import '../config/blockly.css';
@@ -34,10 +27,8 @@ import 'ace-builds/src-noconflict/mode-python';
 import 'ace-builds/src-noconflict/theme-monokai';
 import 'ace-builds/src-noconflict/ext-language_tools';
 
-/* ── 6. 語系設定 ──────────────────────────────────────────────── */
 Blockly.setLocale(zhHant);
 
-/* ================================================================= */
 function Student() {
   const [editorCode, setEditorCode] = useState('');
   const [xml, setXml]         = useState('');
@@ -45,7 +36,7 @@ function Student() {
   const [converter]           = useState(() => new PythonToBlocks());
 
   
-  /* ---------- 左側積木 → 右側程式碼 -------------------------------- */
+  /* 左側積木 → 右側程式碼 */
   const handleConvertPythonCode = () => {
     if (workspaceRef.current) {
       const newCode = pythonGenerator.workspaceToCode(workspaceRef.current);
@@ -53,11 +44,11 @@ function Student() {
     }
   };
 
-  /* ---------- 左側積木 ← 右側程式碼 -------------------------------- */
+  /* 左側積木 ← 右側程式碼 */
   const handleConvertBlocklyBlocks = () => {
     const result = converter.convertSource(editorCode);
     
-    // 無論有無錯誤，都照常嘗試塞進 Workspace
+    /* 無論有無錯誤，都嘗試塞進 Workspace 中 */
     try {
       const dom = Xml.textToDom(result.xml);
       if (workspaceRef.current) {
@@ -70,7 +61,6 @@ function Student() {
     }
   };
 
-  /* ================================================================= */
   return (
     <div className="container mt-4">
       <div className="card bg-dark text-white">
