@@ -55,8 +55,17 @@ function Student() {
   const workspaceRef          = useRef(null);
   const [converter]           = useState(() => new PythonToBlocks());
 
-  /* ---------- 左側文字 → 右側積木 -------------------------------- */
-  const handleConvert = () => {
+  
+  /* ---------- 左側積木 → 右側程式碼 -------------------------------- */
+  const handleConvertPythonCode = () => {
+    if (workspaceRef.current) {
+      const newCode = pythonGenerator.workspaceToCode(workspaceRef.current);
+      setEditorCode(newCode);
+    }
+  };
+
+  /* ---------- 左側積木 ← 右側程式碼 -------------------------------- */
+  const handleConvertBlocklyBlocks = () => {
     const result = converter.convertSource(editorCode);
     
     // 無論有無錯誤，都照常嘗試塞進 Workspace
@@ -72,28 +81,23 @@ function Student() {
     }
   };
 
-  /* ---------- 右側積木 → 左側程式碼 -------------------------------- */
-  const handleWorkspaceChange = (ws) => {
-    if (!ws) return;
-    workspaceRef.current = ws;
-    const newCode = pythonGenerator.workspaceToCode(ws);
-    // setEditorCode(newCode);       // 即時同步到左側文字
-  };
-
   /* ================================================================= */
   return (
     <div className="container mt-4">
       <div className="card bg-dark text-white">
-        <div className="card-header">Blockly Workspace</div>
-        <div className="card-body" style={{ height: 500 }}>
+        <div className="card-header fs-4">積木程式編輯器</div>
+        <div className="card-body" style={{ height: '75vh' }}>
           <div className="row h-100">
             <div className="col-md-6 h-100">
               <BlocklyWorkspace
                 toolboxConfiguration={toolboxConfig}
                 initialXml={xml}
                 className="blockly-workspace"
-                onWorkspaceChange={handleWorkspaceChange}
+                onWorkspaceChange={(workspace) => { workspaceRef.current = workspace; }}
               />
+                <button className="btn btn-primary mt-4" onClick={handleConvertPythonCode}>
+                  積木塊轉換程式碼
+                </button>
             </div>
             <div className="col-md-6 h-100">
               <AceEditor
@@ -105,14 +109,13 @@ function Student() {
                 editorProps={{ $blockScrolling: true }}
                 style={{ width: '100%', height: '100%' }}
               />
+                <button className="btn btn-primary mt-4" onClick={handleConvertBlocklyBlocks}>
+                  程式碼轉換積木塊
+                </button>
             </div>
           </div>
         </div>
       </div>
-
-      <button className="btn btn-primary mt-2" onClick={handleConvert}>
-        轉換程式碼為積木塊
-      </button>
     </div>
   );
 }

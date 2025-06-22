@@ -1,4 +1,4 @@
-// src/blockly_blocks/xml.js
+// src/blockly_blocks/xml.jsx
 // 直接用 ESM 匯入，避免在 import 時 window.Blockly 還沒掛好
 import * as Blockly from 'blockly';
 

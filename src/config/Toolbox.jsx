@@ -1,3 +1,4 @@
+// src/config/Toolbox.jsx
 const Toolbox = {
     kind: "categoryToolbox",
     contents: [
