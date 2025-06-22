@@ -31,9 +31,9 @@ Blockly.setLocale(zhHant);
 
 function Student() {
   const [editorCode, setEditorCode] = useState('');
-  const [xml, setXml]         = useState('');
-  const workspaceRef          = useRef(null);
-  const [converter]           = useState(() => new PythonToBlocks());
+  const [xml, setXml] = useState('');
+  const workspaceRef = useRef(null);
+  const [converter] = useState(() => new PythonToBlocks());
 
   
   /* 左側積木 → 右側程式碼 */

@@ -11,7 +11,7 @@ const Navbar = () => {
       <div className="container-fluid">
         <Link className="navbar-brand" to="/">
           <img src={blocklyLogo} style={{ width: '40px', marginRight: '10px' }} />
-          <span className="navbar-title">PyBlocks 積木式編程</span>
+          <span className="navbar-title">PyBlocks 學習平台</span>
         </Link>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
