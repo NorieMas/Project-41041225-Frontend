@@ -32,7 +32,7 @@ const Support = () => {
   return (
     <div className="container mt-5">
       <h1>聯絡開發者</h1>
-      <p>請填寫您的問題或建議，會寄送給開發者團隊。</p>
+      <p>請填寫您的問題或建議，寄送給開發者團隊。</p>
       <div className="mb-3">
         <label className="form-label">您的訊息：</label>
         <textarea

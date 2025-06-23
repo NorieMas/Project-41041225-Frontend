@@ -6,7 +6,7 @@ dotenv.config();
 
 export default defineConfig({
   plugins: [react()],
-  base: "/Project-41041225-React/",
+  base: "/PyBlocks",
   server: {
     historyApiFallback: true,
   },

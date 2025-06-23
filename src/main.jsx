@@ -10,7 +10,7 @@ import App from './App.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter basename="/Project-41041225-React">
+    <BrowserRouter basename="/PyBlocks">
       <App />
     </BrowserRouter>
   </StrictMode>,
