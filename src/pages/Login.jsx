@@ -1,45 +1,50 @@
 /* src/pages/Login.jsx */
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import { useAuth } from "../utils/AuthContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const Login = () => {
+export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-  const handleLogin = async () => {
-    if (!username || !password) {
-      setMessage("請輸入帳號與密碼！");
-      return;
-    }
-
+  const handleLogin = async (e) => {
+    e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/login", { username, password });
-      setMessage("登入成功！");
-      localStorage.setItem("currentUser", JSON.stringify(res.data.user));
-
-      // 強制刷新整個頁面，讓 Navbar 重新讀取狀態
-      window.location.href = "/";
-      
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/login`, { username, password });
+      login(res.data.token, res.data.user);
+      alert("登入成功");
+      navigate("/");
     } catch (err) {
-      setMessage("登入失敗：" + (err.response?.data?.message || "伺服器錯誤"));
+      alert(err.response?.data?.message || "登入失敗");
     }
   };
 
   return (
     <div className="container mt-5">
-      <h1>登入</h1>
-      <div className="mb-3">
-        <input type="text" className="form-control" placeholder="帳號" value={username} onChange={(e) => setUsername(e.target.value)} />
-      </div>
-      <div className="mb-3">
-        <input type="password" className="form-control" placeholder="密碼" value={password} onChange={(e) => setPassword(e.target.value)} />
-      </div>
-      <button className="btn btn-success" onClick={handleLogin}>登入</button>
-      <p className="mt-3">{message}</p>
+      <h2>登入</h2>
+      <form onSubmit={handleLogin}>
+        <input
+          className="form-control mb-2"
+          placeholder="帳號"
+          value={username}
+          onChange={e => setUsername(e.target.value)}
+          required
+          autoComplete="username"
+        />
+        <input
+          className="form-control mb-2"
+          type="password"
+          placeholder="密碼"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          required
+          autoComplete="current-password"
+        />
+        <button type="submit" className="btn btn-primary">登入</button>
+      </form>
     </div>
   );
-};
-
-export default Login;
+}

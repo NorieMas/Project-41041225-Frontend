@@ -1,38 +1,34 @@
 /* src/components/Navbar.jsx */
-import React, { useState, useEffect } from "react";
+
+import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import blocklyLogo from '../assets/blockly.svg';
 import './Navbar.css';
+import { AuthContext } from '../utils/AuthContext';
 
 const Navbar = () => {
-  const [currentUser, setCurrentUser] = useState(null);
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("currentUser"));
-    setCurrentUser(user);
-  }, []);
-
   const handleLogout = () => {
-    localStorage.removeItem("currentUser");
-    setCurrentUser(null);
+    logout();
     navigate("/");
   };
 
   const renderUserLink = () => {
-    if (!currentUser) return null;
+    if (!user) return null;
 
     let targetPath = "/";
-    if (currentUser.role === "student") {
+    if (user.role === "student") {
       targetPath = "/student";
-    } else if (currentUser.role === "teacher") {
+    } else if (user.role === "teacher") {
       targetPath = "/teacher";
     }
 
     return (
       <div className="nav-item-right">
         <Link className="nav-link" to={targetPath}>
-          {currentUser.username} {currentUser.role === "student" ? "學生" : "教師"}
+          {user.username} {user.role === "student" ? "學生" : "教師"}
         </Link>
       </div>
     );
@@ -60,28 +56,27 @@ const Navbar = () => {
               <Link className="nav-link" to="/support">申請</Link>
             </div>
           </div>
-
-          <div className="navbar-nav">
-            {currentUser ? (
-              <>
-                {renderUserLink()}
-                <div className="nav-item-right">
-                  <button className="nav-link" onClick={handleLogout}>登出</button>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="nav-item-right">
-                  <Link className="nav-link" to="/login">登入</Link>
-                </div>
-                <div className="nav-item-right">
-                  <Link className="nav-link" to="/signup">註冊</Link>
-                </div>
-              </>
-            )}
-          </div>
+        <div className="navbar-nav">
+          {user ? (
+            <>
+              {renderUserLink()}
+              <div className="nav-item-right">
+                <button className="nav-link" onClick={handleLogout}>登出</button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="nav-item-right">
+                <Link className="nav-link" to="/login">登入</Link>
+              </div>
+              <div className="nav-item-right">
+                <Link className="nav-link" to="/signup">註冊</Link>
+              </div>
+            </>
+          )}
         </div>
       </div>
+     </div>
     </nav>
   );
 };

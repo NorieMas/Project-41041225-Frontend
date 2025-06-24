@@ -9,6 +9,12 @@ export default defineConfig({
   base: "/PyBlocks",
   server: {
     historyApiFallback: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+      },
+    },
   },
   build: {
     rollupOptions: {

@@ -1,57 +1,65 @@
-/* src/pages/Signup.jsx */
+// === src/pages/Signup.jsx ===
 
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../utils/AuthContext';
 
 const Signup = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("student");
-  const [message, setMessage] = useState("");
+  const { login } = useAuth();
   const navigate = useNavigate();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState('student');
 
-  const handleSignup = async () => {
-    if (!username || !password) {
-      setMessage("帳號與密碼不得為空！");
-      return;
-    }
+  const handleSignup = async (e) => {
+    e.preventDefault();  // 防止表單預設提交行為
+    console.log("註冊送出資料:", { username, password, role });
 
     try {
-      const res = await axios.post("http://localhost:5000/api/signup", {
-        username,
-        password,
-        role,
-      });
-      setMessage("註冊成功！");
-      setTimeout(() => navigate("/login"), 1000);
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/signup`, { username, password, role });
+      console.log('✅ 收到成功 response:', res);
+      login(res.data.token, res.data.user);
+      navigate('/');
     } catch (err) {
-      setMessage("註冊失敗：" + (err.response?.data?.message || "伺服器錯誤"));
+      console.error('❌ 註冊失敗:', err);
+      alert(err.response?.data?.message || '註冊失敗');
     }
   };
 
   return (
     <div className="container mt-5">
-      <h1>註冊</h1>
-      <div className="mb-3">
-        <input type="text" className="form-control" placeholder="帳號" value={username} onChange={(e) => setUsername(e.target.value)} />
-      </div>
-      <div className="mb-3">
-        <input type="password" className="form-control" placeholder="密碼" value={password} onChange={(e) => setPassword(e.target.value)} />
-      </div>
-      <div className="mb-3">
-        <label className="form-label">身分：</label><br/>
-        <div className="form-check form-check-inline">
-          <input className="form-check-input" type="radio" value="student" checked={role === "student"} onChange={() => setRole("student")} />
-          <label className="form-check-label">學生</label>
-        </div>
-        <div className="form-check form-check-inline">
-          <input className="form-check-input" type="radio" value="teacher" checked={role === "teacher"} onChange={() => setRole("teacher")} />
-          <label className="form-check-label">教師</label>
-        </div>
-      </div>
-      <button className="btn btn-primary" onClick={handleSignup}>註冊</button>
-      <p className="mt-3">{message}</p>
+      <h2>註冊</h2>
+      <form onSubmit={handleSignup}>
+        <input
+          type="text"
+          placeholder="帳號"
+          className="form-control mb-2"
+          value={username}
+          onChange={e => setUsername(e.target.value)}
+          required
+          autoComplete="username"
+        />
+        <input
+          type="password"
+          placeholder="密碼"
+          className="form-control mb-2"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          required
+          autoComplete="new-password"
+        />
+        <select
+          className="form-control mb-3"
+          value={role}
+          onChange={e => setRole(e.target.value)}
+          required
+        >
+          <option value="student">學生</option>
+          <option value="teacher">教師</option>
+        </select>
+        <button type="submit" className="btn btn-primary">註冊</button>
+      </form>
     </div>
   );
 };
