@@ -1,12 +1,9 @@
-/* src/pages/ProblemDetail.jsx */
+//src\pages\ProblemDetail.jsx
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../utils/AuthContext";
-import AceEditor from "react-ace";
-import "ace-builds/src-noconflict/mode-python";
-import "ace-builds/src-noconflict/theme-github";
-
+import PyBlocksEditor from "../utils/PyBlocksEditor";
 
 export default function ProblemDetail() {
   const { token } = useAuth();
@@ -18,19 +15,16 @@ export default function ProblemDetail() {
 
   useEffect(() => {
     fetch(`http://localhost:5000/api/problems`, {
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
+      headers: { "Authorization": `Bearer ${token}` }
     })
     .then((res) => {
-      if (!res.ok) {
-        throw new Error(`HTTP error ${res.status}`);
-      }
+      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       return res.json();
     })
     .then((data) => {
       const p = data.find(item => item.id === id);
       setProblem(p);
+      setCode(p?.code || "");  
     })
     .catch((err) => {
       console.error("取得題目失敗:", err);
@@ -40,7 +34,6 @@ export default function ProblemDetail() {
   const handleSubmit = () => {
     setError(null);
     setResult(null);
-
     fetch(`http://localhost:5000/api/problems/${id}/submit`, {
       method: "POST",
       headers: { 
@@ -51,9 +44,7 @@ export default function ProblemDetail() {
     })
     .then(async (res) => {
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(`${data.error}：${data.details || "未知錯誤"}`);
-      }
+      if (!res.ok) throw new Error(`${data.error}：${data.details || "未知錯誤"}`);
       setResult(data);
     })
     .catch((err) => setError(err.message));
@@ -68,20 +59,9 @@ export default function ProblemDetail() {
           <h3 className="card-title">{problem.title}</h3>
           <p className="card-text">{problem.description}</p>
 
-          <div className="mb-3">
-            <AceEditor
-              mode="python"
-              theme="github"
-              onChange={setCode}
-              value={code}
-              name="code-editor"
-              editorProps={{ $blockScrolling: true }}
-              width="100%"
-              height="300px"
-            />
-          </div>
+          <PyBlocksEditor value={code} onChange={setCode} />
 
-          <button className="btn btn-primary" onClick={handleSubmit}>提交作答</button>
+          <button className="btn btn-primary mt-4" onClick={handleSubmit}>提交作答</button>
 
           {result && (
             <div className={`alert mt-4 ${result.result === '正確' ? 'alert-success' : 'alert-danger'}`}>
@@ -92,7 +72,6 @@ export default function ProblemDetail() {
               <pre style={{ whiteSpace: 'pre-wrap' }}>{result.comment}</pre>
             </div>
           )}
-
 
           {error && (
             <div className="alert alert-warning mt-4">

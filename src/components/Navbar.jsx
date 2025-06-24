@@ -50,7 +50,7 @@ const Navbar = () => {
               <Link className="nav-link" to="/">首頁</Link>
             </div>
             <div className="nav-item-left">
-              <Link className="nav-link" to="/course">課程</Link>
+              <Link className="nav-link" to="/problems">課程</Link>
             </div>
             <div className="nav-item-left">
               <Link className="nav-link" to="/support">申請</Link>

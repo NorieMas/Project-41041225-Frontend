@@ -1,9 +1,9 @@
 /* src/pages/ProblemCreate.jsx */
 import React, { useState } from "react";
-import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/theme-github";
 import { useAuth } from "../utils/AuthContext";
+import PyBlocksEditor from "../utils/PyBlocksEditor";
 
 export default function ProblemCreate() {
   const [title, setTitle] = useState("");
@@ -98,17 +98,8 @@ export default function ProblemCreate() {
 
       {mode === "manual" && (
         <div className="mb-3">
-          <label className="form-label">標準程式碼</label>
-          <AceEditor
-            mode="python"
-            theme="github"
-            onChange={setStandardCode}
-            value={standardCode}
-            name="standard-code-editor"
-            editorProps={{ $blockScrolling: true }}
-            width="100%"
-            height="300px"
-          />
+          <label className="form-label">使用 "積木程式編輯器" 設計標準答案。</label>
+          <PyBlocksEditor value={standardCode} onChange={setStandardCode} />
         </div>
       )}
 
