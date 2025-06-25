@@ -12,13 +12,16 @@ const Admin = () => {
   }, []);
 
   const loadUsers = async () => {
-    const res = await axios.get("http://localhost:5000/api/users");
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/users`);
+
+
+
     setTeachers(res.data.teachers);
     setStudents(res.data.students);
   };
 
   const deleteUser = async (userToDelete) => {
-    await axios.delete(`http://localhost:5000/api/users/${userToDelete.username}`);
+    await axios.delete(`${import.meta.env.VITE_API_URL}/api/users/${userToDelete.username}`);
     loadUsers();
   };
 

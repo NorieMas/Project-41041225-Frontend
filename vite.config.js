@@ -8,6 +8,7 @@ export default defineConfig({
   plugins: [react()],
   base: "/PyBlocks",
   server: {
+    allowedHosts: true,     // 允許所有 host 名稱
     historyApiFallback: true,
     proxy: {
       '/api': {

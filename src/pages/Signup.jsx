@@ -22,10 +22,29 @@ const Signup = () => {
       login(res.data.token, res.data.user);
       navigate('/');
     } catch (err) {
-      console.error('❌ 註冊失敗:', err);
-      alert(err.response?.data?.message || '註冊失敗');
+        let debugMsg = '';
+
+        if (err.config) {
+            debugMsg += `Request URL: ${err.config.url}\n`;
+            debugMsg += `Method: ${err.config.method}\n`;
+            debugMsg += `Headers: ${JSON.stringify(err.config.headers)}\n`;
+            debugMsg += `Data: ${JSON.stringify(err.config.data)}\n\n`;
+        }
+
+        if (err.response) {
+          debugMsg += `Status: ${err.response.status}\n`;
+          debugMsg += `Response Data: ${JSON.stringify(err.response.data)}\n`;
+          debugMsg += `Response Headers: ${JSON.stringify(err.response.headers)}\n`;
+        } else if (err.request) {
+          debugMsg += `Request made but no response received.\n${err.request}`;
+        } else {
+          debugMsg += `Error during request setup: ${err.message}`;
+        }
+        alert('註冊失敗\n' + debugMsg);
     }
   };
+
+      
 
   return (
     <div className="container mt-5">

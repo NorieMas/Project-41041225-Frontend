@@ -26,7 +26,7 @@ export default function ProblemCreate() {
       ...(mode === "manual" && { standardCode }),
     };
 
-    fetch("http://localhost:5000/api/problems", {
+    fetch(`${import.meta.env.VITE_API_URL}/api/problems`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -14,7 +14,7 @@ export default function ProblemDetail() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/problems`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/problems`, {
       headers: { "Authorization": `Bearer ${token}` }
     })
     .then((res) => {
@@ -34,7 +34,7 @@ export default function ProblemDetail() {
   const handleSubmit = () => {
     setError(null);
     setResult(null);
-    fetch(`http://localhost:5000/api/problems/${id}/submit`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/problems/${id}/submit`, {
       method: "POST",
       headers: { 
         "Content-Type": "application/json",

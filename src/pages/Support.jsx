@@ -20,7 +20,7 @@ const Support = () => {
 
     const sender = user ? user.username : "匿名用戶";
 
-    await axios.post("http://localhost:5000/api/send-email", {
+    await axios.post(`${import.meta.env.VITE_API_URL}/api/send-email`, {
       sender,
       message,
     });

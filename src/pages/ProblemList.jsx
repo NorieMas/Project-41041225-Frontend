@@ -14,7 +14,7 @@ export default function ProblemList() {
   useEffect(() => {
       console.log("目前使用的 token:", token);
       console.log("目前使用的 userRole:", userRole);
-      fetch("http://localhost:5000/api/problems", {
+      fetch(`${import.meta.env.VITE_API_URL}/api/problems`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
