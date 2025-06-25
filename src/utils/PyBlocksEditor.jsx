@@ -98,7 +98,7 @@ function PyBlocksEditor({ value = '', onChange = () => {} }) {
     <div className="container mt-4">
       <div className="card bg-dark text-white">
         <div className="card-header fs-4">積木程式編輯器</div>
-        <div className="card-body" style={{ height: '75vh' }}>
+        <div className="card-body" style={{ height: '30vh' }}>
           <div className="row h-100">
             <div className="col-md-6 h-100">
               <BlocklyWorkspace

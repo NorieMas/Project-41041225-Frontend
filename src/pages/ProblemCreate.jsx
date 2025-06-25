@@ -62,7 +62,7 @@ export default function ProblemCreate() {
         <label className="form-label">題目敘述</label>
         <textarea
           className="form-control"
-          rows="5"
+          rows="2"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
